@@ -26,20 +26,20 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// Add camera position display
-const cameraInfo = document.createElement("div");
-cameraInfo.style.position = "absolute";
-cameraInfo.style.top = "10px";
-cameraInfo.style.left = "10px";
-cameraInfo.style.color = "white";
-cameraInfo.style.fontFamily = "monospace";
-cameraInfo.style.fontSize = "14px";
-cameraInfo.style.background = "rgba(0,0,0,0.7)";
-cameraInfo.style.padding = "10px";
-cameraInfo.style.borderRadius = "5px";
-cameraInfo.style.pointerEvents = "none";
-cameraInfo.style.zIndex = "1000";
-document.body.appendChild(cameraInfo);
+// // Add camera position display
+// const cameraInfo = document.createElement("div");
+// cameraInfo.style.position = "absolute";
+// cameraInfo.style.top = "10px";
+// cameraInfo.style.left = "10px";
+// cameraInfo.style.color = "white";
+// cameraInfo.style.fontFamily = "monospace";
+// cameraInfo.style.fontSize = "14px";
+// cameraInfo.style.background = "rgba(0,0,0,0.7)";
+// cameraInfo.style.padding = "10px";
+// cameraInfo.style.borderRadius = "5px";
+// cameraInfo.style.pointerEvents = "none";
+// cameraInfo.style.zIndex = "1000";
+// document.body.appendChild(cameraInfo);
 
 // light (ambient + spotlight will be used so materials can respond to lighting)
 const ambient = new THREE.AmbientLight("black", 0.1);
@@ -109,14 +109,14 @@ loader.load(
   fontUrl,
   (font) => {
     // Filler paragraph text
-    const paragraphText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`;
+    const paragraphText = `In this scene, I’m not myself, and if a me exists, I am nothing but the profile; They are the me, They Go, They walk the way to school, They travel home for family Christmas, They’re pacing through my room, They sleep inside my bed, I am here, but just a witness; And at midnight it’s high noon, barely there, inside their shoes; All that exists is them; All that’s left, that’s here, it’s you;`;
 
     // Calculate size based on camera frustum to fill viewport
     // Use fixed reference distance (25) for consistent text layout regardless of camera position
     const referenceDistance = 25;
     const vFOV = THREE.MathUtils.degToRad(camera.fov);
     const height = 2 * Math.tan(vFOV / 2) * referenceDistance;
-    const width = height * camera.aspect;
+    const width = height * 1.5 * camera.aspect;
 
     // Target text size to fill most of the view (with some padding)
     const targetWidth = width * 0.45;
@@ -128,10 +128,10 @@ loader.load(
 
     // Define color groups - add words to assign them specific colors
     const colorGroups = {
-      red: ["lorem", "dolor", "tempor", "labore", "magna"],
-      blue: ["ipsum", "sit", "amet", "consectetur", "adipiscing"],
-      green: ["sed", "eiusmod", "incididunt", "dolore", "aliqua"],
-      white: [], // default for unlisted words
+      red: ["my", "home", "bed", "family", "room", "here", "I'm"],
+      blue: ["barely", "witness", "noon", "midnight", "All", "is", "you"],
+      green: ["I", "exist", "them", "travel", "pacing", "alone", "left"],
+      // white: [], // default for unlisted words
     };
 
     // Helper function to get color for a word
@@ -140,7 +140,7 @@ loader.load(
       if (colorGroups.red.includes(wordLower)) return 0xff0000;
       if (colorGroups.blue.includes(wordLower)) return 0x0000ff;
       if (colorGroups.green.includes(wordLower)) return 0x00ff00;
-      return 0x000000; // default white
+      return 0xffffff; // default white
     };
 
     // Pre-generate all word geometries to get accurate measurements
@@ -228,7 +228,7 @@ contentGroup.add(rotatingTextGroup);
 loader.load(
   fontUrl,
   (font) => {
-    const ringText = `Lorem ipsum dolor sit amet consectetur adipiscing elit`;
+    const ringText = `i have never let them go let alone left them alone attached a shadow murky just below follow them beneath their feet and take me where if ever should they go`;
     const words = ringText.split(" ");
     const fontSize = 1;
     const radius = 25; // Position between inner sphere (r=20) and outer text (r=30)
@@ -272,7 +272,7 @@ loader.load(
 loader.load(
   fontUrl,
   (font) => {
-    const paragraphText = `Lorem ipsum dolor sit amet consectetur adipiscing elit`;
+    const paragraphText = `First person in my words, to my actions I am second; Point of view, all shot in third, a still, a blur, a message; I dread the rising sun, I need to shed the light; For once, to be first person, an untethered second life;`;
 
     const referenceDistance = 25;
     const vFOV = THREE.MathUtils.degToRad(camera.fov);
@@ -283,6 +283,23 @@ loader.load(
     const words = paragraphText.split(" ");
     const fontSize = 1;
 
+    // Define color groups for outer text
+    const colorGroups = {
+      red: ["shed", "light", "third"],
+      blue: ["rising", "sun", "second"],
+      green: ["untethered", "first", "life"],
+      // white: [], // default for unlisted words
+    };
+
+    // Helper function to get color for a word
+    const getWordColor = (word) => {
+      const wordLower = word.toLowerCase().replace(/[.,!?;:]/g, ""); // remove punctuation
+      if (colorGroups.red.includes(wordLower)) return 0xff0000;
+      if (colorGroups.blue.includes(wordLower)) return 0x0000ff;
+      if (colorGroups.green.includes(wordLower)) return 0x00ff00;
+      return 0xffffff; // default white
+    };
+
     const wordData = words.map((word) => {
       const shapes = font.generateShapes(word, fontSize, 12);
       const geometry = new THREE.ShapeGeometry(shapes);
@@ -290,7 +307,7 @@ loader.load(
       const width = geometry.boundingBox
         ? geometry.boundingBox.max.x - geometry.boundingBox.min.x
         : 0;
-      return { word, geometry, width, color: 0xffffff }; // White for outer text
+      return { word, geometry, width, color: getWordColor(word) };
     });
 
     const spaceWidth = fontSize * 0.35;
@@ -369,7 +386,7 @@ innerSpotlightData.forEach((config) => {
   const spot = new THREE.SpotLight(config.color, 900);
   spot.position.set(...config.position);
   spot.target.position.set(0, 0, 0); // all point at the inner text at origin
-  spot.angle = Math.PI / 2.5;
+  spot.angle = Math.PI / 2;
   spot.penumbra = 0.7;
   spot.distance = 200;
   spot.castShadow = true;
@@ -454,12 +471,12 @@ const animate = () => {
     lastTime = currentTime;
   }
 
-  // Update camera position display
-  cameraInfo.innerHTML = `Camera Position:<br>x: ${camera.position.x.toFixed(
-    2
-  )}<br>y: ${camera.position.y.toFixed(2)}<br>z: ${camera.position.z.toFixed(
-    2
-  )}<br>FPS: ${fps}`;
+  // // Update camera position display
+  // cameraInfo.innerHTML = `Camera Position:<br>x: ${camera.position.x.toFixed(
+  //   2
+  // )}<br>y: ${camera.position.y.toFixed(2)}<br>z: ${camera.position.z.toFixed(
+  //   2
+  // )}<br>FPS: ${fps}`;
 
   // Text rotation (set to 0 for now, but ready to animate)
   if (textMesh) {
